@@ -380,7 +380,7 @@ coap_session_release_lkd(coap_session_t *session) {
     assert(session->ref > 0);
     if (session->ref > 0)
       --session->ref;
-    if (session->ref == 0 && session->type == COAP_SESSION_TYPE_CLIENT)
+    if (session->ref == 0 && (session->type == COAP_SESSION_TYPE_CLIENT || session->type == COAP_SESSION_TYPE_SERVER))
       coap_session_free(session);
 #else /* __COVERITY__ */
     /* Coverity scan is fooled by the reference counter leading to
@@ -388,7 +388,7 @@ coap_session_release_lkd(coap_session_t *session) {
     --session->ref;
     __coverity_negative_sink__(session->ref);
     /* Indicate that resources are released properly. */
-    if (session->ref == 0 && session->type == COAP_SESSION_TYPE_CLIENT) {
+    if (session->ref == 0 && (session->type == COAP_SESSION_TYPE_CLIENT || session->type == COAP_SESSION_TYPE_SERVER)) {
       __coverity_free__(session);
     }
 #endif /* __COVERITY__ */
