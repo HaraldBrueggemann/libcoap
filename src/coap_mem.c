@@ -512,7 +512,7 @@ coap_realloc_type(coap_memory_tag_t type, void *p, size_t size) {
   void *ptr;
 
   (void)type;
-#if KERNEL_VERSION_NUMBER >= 0x30700
+#if KERNEL_VERSION_NUMBER >= 0x30700 || __ZEPHYR__
   ptr = k_realloc(p, size);
 #else /* KERNEL_VERSION_NUMBER < 0x30700 */
   if (!p) {
