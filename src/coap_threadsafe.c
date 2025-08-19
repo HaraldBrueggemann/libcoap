@@ -99,7 +99,7 @@ coap_lock_lock_func(void) {
 }
 #endif /* ! COAP_THREAD_RECURSIVE_CHECK */
 
-#if !WITH_LWIP
+#if !(WITH_LWIP || __ZEPHYR__)
 extern volatile int coap_thread_quit;
 static pthread_t *thread_id = NULL;
 static uint32_t thread_id_count = 0;
@@ -203,7 +203,7 @@ coap_io_process_remove_threads(coap_context_t *context) {
   coap_mutex_unlock(&m_io_threads);
   coap_lock_lock(return);
 }
-#endif /* !WITH_LWIP */
+#endif /* !(WITH_LWIP || __ZEPHYR__) */
 
 #else /* ! COAP_THREAD_SAFE */
 
