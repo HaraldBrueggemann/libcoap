@@ -1338,9 +1338,11 @@ coap_endpoint_get_session(coap_endpoint_t *endpoint,
       SESSIONS_ITER(endpoint->sessions, session, rtmp) {
         if (session->client_cid) {
           if ((session->is_dtls13 && (payload[OFF_CONTENT_TYPE] & 0x30) == 0x30 &&
+               length > (OFF_CID_DTLS13 + session->client_cid->length) &&
                memcmp(session->client_cid->s, &payload[OFF_CID_DTLS13],
                       session->client_cid->length) == 0) ||
               (!session->is_dtls13 && payload[OFF_CONTENT_TYPE] == DTLS_CT_CID &&
+               length > (OFF_CID + session->client_cid->length) &&
                memcmp(session->client_cid->s, &payload[OFF_CID],
                       session->client_cid->length) == 0)) {
             /* Updating IP address */
@@ -2642,6 +2644,10 @@ const char *
 coap_session_str(const coap_session_t *session) {
   static char szSession[2 * (INET6_ADDRSTRLEN + 8) + 24];
   char *p = szSession, *end = szSession + sizeof(szSession);
+
+  if (!session) {
+    return "Session not defined";
+  }
   if (coap_print_addr(&session->addr_info.local,
                       (unsigned char *)p, end - p) > 0)
     p += strlen(p);

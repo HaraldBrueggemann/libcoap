@@ -85,7 +85,9 @@ if(NOT ZEPHYR_BASE)
 #  set_property(TARGET ${COAP_LIBRARY_NAME} PROPERTY C_STANDARD 99)
 endif() # ! ZEPHYR_BASE
 if(${CMAKE_VERSION} VERSION_GREATER "3.20.0")
-  cmake_policy(SET CMP0115 OLD) # Supresses libcoap configuration warning
+  if(${CMAKE_VERSION} VERSION_LESS "3.28.0")
+    cmake_policy(SET CMP0115 OLD) # Supresses libcoap configuration warning
+  endif()
 endif()
 
 set_target_properties(${COAP_LIBRARY_NAME} PROPERTIES SOVERSION ${LIBCOAP_API_VERSION})
@@ -761,9 +763,6 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake_coap_config.h.in
 configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake_coap_defines.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/include/coap${LIBCOAP_API_VERSION}/coap_defines.h)
 
-configure_file(${CMAKE_CURRENT_LIST_DIR}/tests/test_common.h.in
-               ${CMAKE_CURRENT_LIST_DIR}/tests/test_common.h)
-
 #
 # sources
 #
@@ -776,11 +775,13 @@ target_sources(
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_block.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_cache.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_debug.c
+          ${CMAKE_CURRENT_LIST_DIR}/src/coap_dgrm_posix.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_dtls.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_encode.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_event.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_hashkey.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_io.c
+          ${CMAKE_CURRENT_LIST_DIR}/src/coap_io_posix.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_layers.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_mem.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_net.c
@@ -795,8 +796,8 @@ target_sources(
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_session.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_sha1.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_str.c
+          ${CMAKE_CURRENT_LIST_DIR}/src/coap_strm_posix.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_subscribe.c
-          ${CMAKE_CURRENT_LIST_DIR}/src/coap_tcp.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_threadsafe.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_time.c
           ${CMAKE_CURRENT_LIST_DIR}/src/coap_uri.c
