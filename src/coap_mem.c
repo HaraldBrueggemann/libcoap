@@ -15,10 +15,6 @@
 
 #include "coap3/coap_libcoap_build.h"
 
-#ifdef __ZEPHYR__
-#include <zephyr/kernel.h>
-#endif
-
 #ifndef WITH_LWIP
 #if COAP_MEMORY_TYPE_TRACK
 static int track_counts[COAP_MEM_TAG_LAST];
@@ -492,30 +488,13 @@ void
 coap_memory_init(void) {
 }
 
-#if defined(__ZEPHYR__) && defined(CONFIG_SYS_HEAP_RUNTIME_STATS)
-extern struct sys_heap _system_heap;
-
-void print_heap(size_t size) {
-  struct sys_memory_stats heap_stats;
-
-  int result = sys_heap_runtime_stats_get(&_system_heap, &heap_stats);
-  if (result >= 0) 
-    coap_log_crit("Heap: \"requested\": %u, \"free\": %u, \"allocated\": %u}\n", size, heap_stats.free_bytes, heap_stats.allocated_bytes);
-}
-#else 
-void print_heap(size_t size) {(void)size;)}
-#endif
-
 void *
 coap_malloc_type(coap_memory_tag_t type, size_t size) {
   void *ptr;
 
   (void)type;
   ptr = k_malloc(size);
-  if (!ptr)
-    print_heap(size);
-
-    #if COAP_MEMORY_TYPE_TRACK
+#if COAP_MEMORY_TYPE_TRACK
   assert(type < COAP_MEM_TAG_LAST);
   if (ptr) {
     track_counts[type]++;
